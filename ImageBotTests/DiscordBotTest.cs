@@ -1,4 +1,7 @@
-﻿using Discord.Net;
+﻿using Discord;
+using Discord.Net;
+using Discord.WebSocket;
+using Moq;
 
 namespace ImageBotTests
 {
@@ -45,6 +48,26 @@ namespace ImageBotTests
             await Task.Delay(5000);
 
             Assert.That(fakeLogger.BotHasThrown<InvalidOperationException>(), Is.True);
+        }
+
+        [Test]
+        public void AddImageCommand_ThrowsArgumentNullException_WhenNullImageCommandIsPassed()
+        {
+            DiscordBot bot = new();
+
+            Assert.That(() => bot.AddImageCommand(null), Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void AddImageCommand_DoesntThrow_WhenTheSameCommandIsAddedMoreThanOnce()
+        {
+            DiscordBot bot = new();
+
+            Mock<ImageCommand> mockedCommand = new();
+            mockedCommand.Setup(x => x.GetName()).Returns("MockedCommand");
+
+            Assert.That(() => bot.AddImageCommand(mockedCommand.Object), Throws.Nothing);
+            Assert.That(() => bot.AddImageCommand(mockedCommand.Object), Throws.Nothing);
         }
     }
 }
