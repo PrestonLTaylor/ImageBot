@@ -1,6 +1,4 @@
-﻿using Discord;
-using Discord.Net;
-using Discord.WebSocket;
+﻿using Discord.Net;
 using Moq;
 
 namespace ImageBotTests
@@ -8,7 +6,7 @@ namespace ImageBotTests
     // TODO: Refactor all tests into cleaner tests
     internal class DiscordBotTest
     {
-        [Test]
+        [Test, Timeout(5000)]
         public async Task WhenLoggingInWithAShortInvalidToken_ThrowsArgumentException()
         {
             // TODO: Replace Task.Delay with something that FakeDiscordLogger can interrupt
@@ -17,12 +15,11 @@ namespace ImageBotTests
             await bot.LoginWithTokenAsync("INVALID-SHORT-TOKEN");
             await bot.StartAsync();
 
-            await Task.Delay(5000);
-
-            Assert.That(fakeLogger.BotHasThrown<ArgumentException>(), Is.True);
+            while (!fakeLogger.BotHasThrown<ArgumentException>()) {}
+            Assert.Pass();
         }
 
-        [Test]
+        [Test, Timeout(5000)]
         public async Task WhenLoggingInWithAnInvalidToken_ThrowsHttpException()
         {
             FakeDiscordLogger fakeLogger = new();
@@ -31,13 +28,12 @@ namespace ImageBotTests
             await bot.LoginWithTokenAsync("INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN");
             await bot.StartAsync();
 
-            await Task.Delay(5000);
-
-            Assert.That(fakeLogger.BotHasThrown<HttpException>(), Is.True);
+            while (!fakeLogger.BotHasThrown<HttpException>()) {}
+            Assert.Pass();
         }
 
         // TODO: This test is a reminder that the temporal coupiling should be refactored to make this impossible
-        [Test]
+        [Test, Timeout(5000)]
         public async Task WhenStartingWithoutLoggingIn_ThrowsInvalidOperationException()
         {
             FakeDiscordLogger fakeLogger = new();
@@ -45,9 +41,8 @@ namespace ImageBotTests
 
             await bot.StartAsync();
 
-            await Task.Delay(5000);
-
-            Assert.That(fakeLogger.BotHasThrown<InvalidOperationException>(), Is.True);
+            while (!fakeLogger.BotHasThrown<InvalidOperationException>()) { }
+            Assert.Pass();
         }
 
         [Test]
