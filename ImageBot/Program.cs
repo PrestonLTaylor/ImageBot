@@ -1,8 +1,4 @@
-﻿using Discord;
-using Discord.Net;
-using Discord.Rest;
-using Discord.WebSocket;
-using ImageBot.API;
+﻿using ImageBot.Commands;
 
 namespace ImageBot
 {
@@ -12,52 +8,32 @@ namespace ImageBot
 
         public async Task MainAsync()
         {
-            client.Log += Log;
-            client.Ready += CreateCommands;
-            client.SlashCommandExecuted += HandleSlashCommand;
+            var token = await TryToReadTokenFileAsync();
 
-            var token = File.ReadAllText("token.txt");
+            DiscordBot bot = new();
 
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
+            bot.AddImageCommand(new DogImageCommand());
+
+            await bot.LoginWithTokenAsync(token);
+            await bot.StartAsync();
 
             await Task.Delay(-1);
         }
 
-        private Task Log(LogMessage msg)
+        private async Task<string> TryToReadTokenFileAsync()
         {
-            Console.WriteLine(msg.ToString());
-            return Task.CompletedTask;
-        }
-
-        private async Task CreateCommands()
-        {
-            // TODO: Create if command changes instead of always
-            var dogImageCommand = new SlashCommandBuilder()
-                .WithName("dog")
-                .WithDescription("Get a random image of a dog!");
-
+            const string tokenFilePath = "token.txt";
             try
             {
-                await client.CreateGlobalApplicationCommandAsync(dogImageCommand.Build());
-            } 
-            catch (HttpException ex)
+                return await File.ReadAllTextAsync(tokenFilePath);
+            }
+            catch (FileNotFoundException ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine($"""Did you forget to create a file called "{tokenFilePath}" with only the bot's token inside?""");
+                Console.WriteLine(ex.Message);
+                Environment.Exit(-1);
+                throw ex;
             }
         }
-
-        private async Task HandleSlashCommand(SocketSlashCommand command)
-        {
-            switch (command.Data.Name)
-            {
-                case "dog":
-                    await command.RespondAsync(await dogImageAPI.GetRandomImageURLAsync());
-                    break;
-            }
-        }
-
-        private readonly DogImageAPI dogImageAPI = new();
-        private readonly DiscordSocketClient client = new();
     }
 }
