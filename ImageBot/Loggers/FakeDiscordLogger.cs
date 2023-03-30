@@ -8,7 +8,10 @@ namespace ImageBot.Loggers
         {
             if (message.Exception is not null)
             {
-                exceptionsThatHaveBeenThrown.Add(message.Exception.GetType());
+                lock (exceptionsThatHaveBeenThrown)
+                {
+                    exceptionsThatHaveBeenThrown.Add(message.Exception.GetType());
+                }
             }
 
             return Task.CompletedTask;
@@ -16,7 +19,10 @@ namespace ImageBot.Loggers
 
         public bool BotHasThrown<T>() where T : Exception
         {
-            return exceptionsThatHaveBeenThrown.Contains(typeof(T));
+            lock (exceptionsThatHaveBeenThrown)
+            {
+                return exceptionsThatHaveBeenThrown.Contains(typeof(T));
+            }
         }
 
         private readonly HashSet<Type> exceptionsThatHaveBeenThrown = new();
