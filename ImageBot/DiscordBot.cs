@@ -39,23 +39,24 @@ namespace ImageBot
 
         private async Task OnReady()
         {
+            List<ApplicationCommandProperties> builtCommands = new();
             foreach (var imageCommand in imageCommands)
             {
-                // TODO: Create if command changes instead of always using GetGlobalApplicationCommandsAsync
                 var slashCommandBuilder = new SlashCommandBuilder()
                     .WithName(imageCommand.Value.GetName())
                     .WithDescription(imageCommand.Value.GetDescription())
                     .AddOptions(imageCommand.Value.GetCommandOptions());
 
-                // TODO: Replace with Task.WaitAll instead of individually awaiting each command
-                try
-                {
-                    await client.CreateGlobalApplicationCommandAsync(slashCommandBuilder.Build());
-                }
-                catch (HttpException ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+                builtCommands.Add(slashCommandBuilder.Build());
+            }
+
+            try
+            {
+                await client.BulkOverwriteGlobalApplicationCommandsAsync(builtCommands.ToArray());
+            }
+            catch (HttpException ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
