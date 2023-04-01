@@ -1,3 +1,4 @@
+
 # ImageBot
 
 ImageBot is a customisable C# discord bot that easily allows you to add commands for responding with images.
@@ -17,6 +18,18 @@ Inside the ImageBotTests folder execute the command:
 ```
 dotnet test
 ```
+
+## Adding Commands
+
+To add a new command to the bot you must implement a class that inherits the interface ImageCommand.
+
+Then, add an instance of the command class to the bot before starting the bot:
+```C#
+DiscordBot bot = new();
+bot.AddImageCommand(new ExampleImageCommand());
+```
+
+See [DogImageCommand](https://github.com/PrestonLTaylor/ImageBot/blob/master/ImageBot/Commands/DogImageCommand.cs) for an example.
 
 ## License
 
