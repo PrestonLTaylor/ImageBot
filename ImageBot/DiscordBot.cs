@@ -60,16 +60,28 @@ namespace ImageBot
 
         private async Task OnSlashCommandExecuted(SocketSlashCommand command)
         {
+            var commandParameters = GetCommandParametersFromOptions(command.Data.Options);
             
             if (imageCommands.TryGetValue(command.CommandName, out ImageCommand? commandToExecute))
             {
-                var response = await commandToExecute.TryToRespondAsync();
+                var response = await commandToExecute.TryToRespondAsync(commandParameters);
                 await command.RespondAsync(response);
             }
             else
             {
                 await command.RespondAsync("Command was not found.", ephemeral: true);
             }
+        }
+
+        private Dictionary<string, object> GetCommandParametersFromOptions(IReadOnlyCollection<SocketSlashCommandDataOption> options)
+        {
+            Dictionary<string, object> commandParameters = new();
+            foreach (var option in options)
+            {
+                commandParameters.Add(option.Name, option.Value);
+            }
+
+            return commandParameters;
         }
 
         private readonly DiscordSocketClient client = new();
