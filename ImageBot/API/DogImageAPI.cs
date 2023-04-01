@@ -22,15 +22,22 @@ namespace ImageBot.API
 
         public async Task<string> GetRandomImageURLAsync()
         {
-            var response = await GetRandomImageResponseAsync();
+            var response = await GetRandomImageResponseAsync("breeds/image/random");
 
             // The message contains the url on a successful random get
             return response.message;
         }
 
-        private async Task<DogImageResponse> GetRandomImageResponseAsync()
+        public async Task<string> GetRandomImageURLWithTagAsync(string breed)
         {
-            var rawResponse = await client.GetAsync("breeds/image/random");
+            var response = await GetRandomImageResponseAsync($"breed/{breed}/images/random");
+
+            return response.message;
+        }
+
+        private async Task<DogImageResponse> GetRandomImageResponseAsync(string apiPath)
+        {
+            var rawResponse = await client.GetAsync(apiPath);
             var response = JsonSerializer.Deserialize<DogImageResponse>(await rawResponse.Content.ReadAsStringAsync());
             EnsureResponseIsValid(response);
             return response;

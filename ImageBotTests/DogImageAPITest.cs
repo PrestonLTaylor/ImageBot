@@ -13,13 +13,31 @@ namespace ImageBotTests
 
         // Refactor into cleaner tests
         [Test]
-        public async Task Can_GetRandomImageURL()
+        public async Task GetRandomImageURLAsync_ReturnsAnImageFromTheAPI()
         {
             DogImageAPI dogImageAPI = new();
 
             const string dogAPIImageDomainName = "images.dog.ceo";
             var imageURL = await dogImageAPI.GetRandomImageURLAsync();
             Assert.That(imageURL, Does.Contain(dogAPIImageDomainName));
+        }
+
+        [Test]
+        public async Task GetRandomImageURLWithTagAsync_ReturnsAnImageFromTheAPI()
+        {
+            DogImageAPI dogImageAPI = new();
+
+            const string dogAPIImageDomainName = "images.dog.ceo";
+            var imageURL = await dogImageAPI.GetRandomImageURLWithTagAsync("samoyed");
+            Assert.That(imageURL, Does.Contain(dogAPIImageDomainName));
+        }
+
+        [Test]
+        public void GetRandomImageURLWithTagAsync_ThrowsImageAPIException_WhenSuppliedInvalidDogBreed()
+        {
+            DogImageAPI dogImageAPI = new();
+            
+            Assert.That(async () => await dogImageAPI.GetRandomImageURLWithTagAsync("invalidbreed"), Throws.TypeOf<ImageAPIException>());
         }
 
         [Test]
