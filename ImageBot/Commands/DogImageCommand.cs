@@ -25,7 +25,7 @@ namespace ImageBot.Commands
             };
         }
 
-        public async Task<string> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters)
+        public async Task<EmbedBuilder> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters)
         {
             try
             {
@@ -33,24 +33,34 @@ namespace ImageBot.Commands
             }
             catch (ImageAPIException ex)
             {
-                return ex.Message;
+                return new EmbedBuilder().WithTitle($"Error: {ex.Message}");
             }
         }
 
-        private async Task<string> RespondAsync(IReadOnlyDictionary<string, object> parameters)
+        private async Task<EmbedBuilder> RespondAsync(IReadOnlyDictionary<string, object> parameters)
+        {
+            var imageURL = await GetRandomImageOfADog(parameters);
+
+            return new EmbedBuilder()
+                .WithTitle("Dog!")
+                .WithImageUrl(imageURL)
+                .WithColor(new Color(1F, 0F, 1F));
+        }
+
+        private async Task<string> GetRandomImageOfADog(IReadOnlyDictionary<string, object> parameters)
         {
             if (parameters.TryGetValue("breed", out object? breed))
             {
-                return await RespondWithUserBreedAsync(breed.ToString()!);
+                return await GetRandomImageURLWithBreedAsync(breed.ToString()!);
             }
             else
             {
-                return await RespondWithRandomBreedAsync();
+                return await GetRandomImageURLAsync();
             }
         }
 
-        private async Task<string> RespondWithUserBreedAsync(string breed) { return await dogImageAPI.GetRandomImageURLWithTagAsync(breed); }
-        private async Task<string> RespondWithRandomBreedAsync() { return await dogImageAPI.GetRandomImageURLAsync(); }
+        private async Task<string> GetRandomImageURLWithBreedAsync(string breed) { return await dogImageAPI.GetRandomImageURLWithTagAsync(breed); }
+        private async Task<string> GetRandomImageURLAsync() { return await dogImageAPI.GetRandomImageURLAsync(); }
 
         private readonly ImageAPI dogImageAPI;
     }

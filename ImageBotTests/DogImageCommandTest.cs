@@ -13,7 +13,7 @@ namespace ImageBotTests
             const string expectedResponse = "MockedResponse";
             SetupGetRandomImageURLToReturn(imageAPIMock, expectedResponse);
 
-            Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()), Is.EqualTo(expectedResponse));
+            Assert.That((await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>())).ImageUrl, Is.EqualTo(expectedResponse));
         }
 
         [Test]
@@ -26,10 +26,10 @@ namespace ImageBotTests
             const string fakeTag = "FakeTag";
             SetupGetRandomImageURLWithTagToReturn(imageAPIMock, fakeTag, expectedResponse);
 
-            Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
+            Assert.That((await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
             {
                 { "breed", fakeTag }
-            }), Is.EqualTo(expectedResponse));
+            })).ImageUrl, Is.EqualTo(expectedResponse));
         }
 
         [Test]
@@ -46,11 +46,11 @@ namespace ImageBotTests
 
             Assert.Multiple(async () =>
             {
-                Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()), Is.EqualTo(expectedResponse));
-                Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
+                Assert.That((await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>())).Title, Is.EqualTo($"Error: {expectedResponse}"));
+                Assert.That((await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
                 {
                     { "breed", fakeTag }
-                }), Is.EqualTo(expectedResponse));
+                })).Title, Is.EqualTo($"Error: {expectedResponse}"));
             });
         }
 

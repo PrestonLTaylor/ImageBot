@@ -67,7 +67,7 @@ namespace ImageBot
             if (imageCommands.TryGetValue(command.CommandName, out ImageCommand? commandToExecute))
             {
                 var response = await commandToExecute.TryToRespondAsync(commandParameters);
-                await command.RespondAsync(response);
+                await command.RespondAsync(embed: response.Build());
             }
             else
             {

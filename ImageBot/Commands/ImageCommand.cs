@@ -9,6 +9,6 @@ namespace ImageBot.Commands
         public string GetDescription();
         public SlashCommandOptionBuilder[] GetCommandOptions();
 
-        public Task<string> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters);
+        public Task<EmbedBuilder> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters);
     }
 }
