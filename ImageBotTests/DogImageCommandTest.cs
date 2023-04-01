@@ -11,8 +11,7 @@ namespace ImageBotTests
             DogImageCommand dogImageCommand = new(imageAPIMock.Object);
 
             const string expectedResponse = "MockedResponse";
-            imageAPIMock.Setup(x => x.GetRandomImageURLAsync())
-                .ReturnsAsync(expectedResponse);
+            SetupGetRandomImageURLToReturn(imageAPIMock, expectedResponse);
 
             Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()), Is.EqualTo(expectedResponse));
         }
@@ -25,8 +24,7 @@ namespace ImageBotTests
 
             const string expectedResponse = "MockedResponse";
             const string fakeTag = "FakeTag";
-            imageAPIMock.Setup(x => x.GetRandomImageURLWithTagAsync(fakeTag))
-                .ReturnsAsync(expectedResponse);
+            SetupGetRandomImageURLWithTagToReturn(imageAPIMock, fakeTag, expectedResponse);
 
             Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
             {
@@ -41,14 +39,12 @@ namespace ImageBotTests
             DogImageCommand dogImageCommand = new(imageAPIMock.Object);
 
             const string expectedResponse = "MockedError";
-            imageAPIMock.Setup(x => x.GetRandomImageURLAsync())
-                .ThrowsAsync(new ImageAPIException(expectedResponse));
-
             const string fakeTag = "FakeTag";
-            imageAPIMock.Setup(x => x.GetRandomImageURLWithTagAsync(fakeTag))
-                .ThrowsAsync(new ImageAPIException(expectedResponse));
+            ImageAPIException exceptionToThrow = new(expectedResponse);
+            SetupGetRandomImageURLToThrow(imageAPIMock, exceptionToThrow);
+            SetupGetRandomImageURLWithTagToThrow(imageAPIMock, fakeTag, exceptionToThrow);
 
-             Assert.Multiple(async () =>
+            Assert.Multiple(async () =>
             {
                 Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()), Is.EqualTo(expectedResponse));
                 Assert.That(await dogImageCommand.TryToRespondAsync(new Dictionary<string, object>()
@@ -56,6 +52,30 @@ namespace ImageBotTests
                     { "breed", fakeTag }
                 }), Is.EqualTo(expectedResponse));
             });
+        }
+
+        private void SetupGetRandomImageURLToReturn(Mock<ImageAPI> mock, string response)
+        {
+            mock.Setup(x => x.GetRandomImageURLAsync())
+                .ReturnsAsync(response);
+        }
+
+        private void SetupGetRandomImageURLWithTagToReturn(Mock<ImageAPI> mock, string tag, string response)
+        {
+            mock.Setup(x => x.GetRandomImageURLWithTagAsync(tag))
+                .ReturnsAsync(response);
+        }
+
+        private void SetupGetRandomImageURLToThrow(Mock<ImageAPI> mock, ImageAPIException exception)
+        {
+            mock.Setup(x => x.GetRandomImageURLAsync())
+                .ThrowsAsync(exception);
+        }
+
+        private void SetupGetRandomImageURLWithTagToThrow(Mock<ImageAPI> mock, string tag, ImageAPIException exception)
+        {
+            mock.Setup(x => x.GetRandomImageURLWithTagAsync(tag))
+                .ThrowsAsync(exception);
         }
     }
 }

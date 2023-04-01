@@ -11,14 +11,13 @@ namespace ImageBotTests
             mockHttpMessageHandler = new();
         }
 
-        // Refactor into cleaner tests
         [Test]
         public async Task GetRandomImageURLAsync_ReturnsAnImageFromTheAPI()
         {
             DogImageAPI dogImageAPI = new();
 
-            const string dogAPIImageDomainName = "images.dog.ceo";
             var imageURL = await dogImageAPI.GetRandomImageURLAsync();
+
             Assert.That(imageURL, Does.Contain(dogAPIImageDomainName));
         }
 
@@ -27,8 +26,8 @@ namespace ImageBotTests
         {
             DogImageAPI dogImageAPI = new();
 
-            const string dogAPIImageDomainName = "images.dog.ceo";
             var imageURL = await dogImageAPI.GetRandomImageURLWithTagAsync("samoyed");
+
             Assert.That(imageURL, Does.Contain(dogAPIImageDomainName));
         }
 
@@ -41,39 +40,40 @@ namespace ImageBotTests
         }
 
         [Test]
-        public async Task SuccessfulRandomImageResponse_ReturnsMessageField()
+        public void SuccessfulRandomImageResponse_ReturnsMessageField()
         {
             DogImageAPI dogImageAPI = new(mockHttpMessageHandler);
 
-            const string randomDogImageAPIURL = "https://dog.ceo/api/breeds/image/random";
             const string successfulResponse = "MockedURL";
-            mockHttpMessageHandler.When(randomDogImageAPIURL)
-                .Respond(JsonContent.Create(new
-                {
-                    message = successfulResponse,
-                    status = "success",
-                }));
+            SetupResponseForRandomDogImageAPI(JsonContent.Create(new
+            {
+                message = successfulResponse,
+                status = "success",
+            }));
 
-            var imageURL = await dogImageAPI.GetRandomImageURLAsync();
-            Assert.That(imageURL, Does.Contain(successfulResponse));
+            Assert.That(dogImageAPI.GetRandomImageURLAsync, Does.Contain(successfulResponse));
         }
 
         [Test]
         public void FailureToGetRandomImage_ThrowsImageAPIException()
         {
             DogImageAPI dogImageAPI = new(mockHttpMessageHandler);
-
-            const string randomDogImageAPIURL = "https://dog.ceo/api/breeds/image/random";
-            mockHttpMessageHandler.When(randomDogImageAPIURL)
-                .Respond(JsonContent.Create(new
-                {
-                    message = "Mocked Failure",
-                    status = "error",
-                }));
+            SetupResponseForRandomDogImageAPI(JsonContent.Create(new
+            {
+                message = "Mocked Failure",
+                status = "error",
+            }));
 
             Assert.That(dogImageAPI.GetRandomImageURLAsync, Throws.TypeOf<ImageAPIException>());
         }
 
+        private void SetupResponseForRandomDogImageAPI(JsonContent jsonContent)
+        {
+            const string randomDogImageAPIURL = "https://dog.ceo/api/breeds/image/random";
+            mockHttpMessageHandler.When(randomDogImageAPIURL).Respond(jsonContent);
+        }
+
+        private const string dogAPIImageDomainName = "images.dog.ceo";
         private MockHttpMessageHandler mockHttpMessageHandler;
     }
 }
