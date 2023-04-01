@@ -1,4 +1,4 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
 
 namespace ImageBot.Commands
 {
@@ -7,6 +7,7 @@ namespace ImageBot.Commands
     {
         public string GetName();
         public string GetDescription();
+        public SlashCommandOptionBuilder[] GetCommandOptions();
 
         public Task<string> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters);
     }

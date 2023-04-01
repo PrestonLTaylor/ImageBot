@@ -1,4 +1,5 @@
-﻿using ImageBot.API;
+﻿using Discord;
+using ImageBot.API;
 
 namespace ImageBot.Commands
 {
@@ -9,6 +10,20 @@ namespace ImageBot.Commands
 
         public string GetName() { return "dog"; }
         public string GetDescription() { return "Get a random image of a dog!"; }
+
+        public SlashCommandOptionBuilder[] GetCommandOptions()
+        {
+            return new SlashCommandOptionBuilder[]
+            {
+                new()
+                {
+                    Name = "breed",
+                    Description = "The breed of dog to get.",
+                    IsRequired = false,
+                    Type = ApplicationCommandOptionType.String
+                }
+            };
+        }
 
         public async Task<string> TryToRespondAsync(IReadOnlyDictionary<string, object> parameters)
         {

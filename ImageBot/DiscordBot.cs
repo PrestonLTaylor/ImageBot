@@ -44,7 +44,8 @@ namespace ImageBot
                 // TODO: Create if command changes instead of always using GetGlobalApplicationCommandsAsync
                 var slashCommandBuilder = new SlashCommandBuilder()
                     .WithName(imageCommand.Value.GetName())
-                    .WithDescription(imageCommand.Value.GetDescription());
+                    .WithDescription(imageCommand.Value.GetDescription())
+                    .AddOptions(imageCommand.Value.GetCommandOptions());
 
                 // TODO: Replace with Task.WaitAll instead of individually awaiting each command
                 try
