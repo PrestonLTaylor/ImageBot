@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+﻿using System.Text.Json;
 
 namespace ImageBot.API
 {
@@ -22,15 +22,16 @@ namespace ImageBot.API
 
         public async Task<string> GetRandomImageURLAsync()
         {
-            var response = await GetRandomImageResponse();
+            var response = await GetRandomImageResponseAsync();
 
             // The message contains the url on a successful random get
             return response.message;
         }
 
-        private async Task<DogImageResponse> GetRandomImageResponse()
+        private async Task<DogImageResponse> GetRandomImageResponseAsync()
         {
-            var response = await client.GetFromJsonAsync<DogImageResponse>("breeds/image/random");
+            var rawResponse = await client.GetAsync("breeds/image/random");
+            var response = JsonSerializer.Deserialize<DogImageResponse>(await rawResponse.Content.ReadAsStringAsync());
             EnsureResponseIsValid(response);
             return response;
         }
