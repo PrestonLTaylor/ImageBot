@@ -72,8 +72,10 @@ namespace ImageBot
             
             if (imageCommands.TryGetValue(command.CommandName, out ImageCommand? commandToExecute))
             {
+                // Makes sure that we don't timeout if the command takes too long to execute
+                await command.DeferAsync();
                 var response = await commandToExecute.TryToRespondAsync(commandParameters);
-                await command.RespondAsync(embed: response.Build());
+                await command.FollowupAsync(embed: response.Build());
             }
             else
             {
