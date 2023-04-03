@@ -10,11 +10,10 @@ namespace ImageBot
         {
             var token = await TryToReadTokenFileAsync();
 
-            DiscordBot bot = new();
+            var bot = await DiscordBot.CreateBotWithToken(token);
 
             bot.AddImageCommand(new DogImageCommand());
 
-            await bot.LoginWithTokenAsync(token);
             await bot.StartAsync();
 
             await Task.Delay(-1);

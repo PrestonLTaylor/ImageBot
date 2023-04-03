@@ -8,9 +8,15 @@ namespace ImageBot
 {
     public class DiscordBot
     {
-        public DiscordBot() : this(new ConsoleDiscordLogger()) {}
+        static public async Task<DiscordBot> CreateBotWithToken(string token) => await CreateBotWithTokenAndLogger(token, new ConsoleDiscordLogger());
+        static public async Task<DiscordBot> CreateBotWithTokenAndLogger(string token, DiscordLogger logger)
+        {
+            var bot = new DiscordBot(logger);
+            await bot.LoginWithTokenAsync(token);
+            return bot;
+        }
 
-        public DiscordBot(DiscordLogger logger)
+        private DiscordBot(DiscordLogger logger)
         {
             client.Log += logger.Log;
             client.Ready += OnReady;
@@ -27,7 +33,7 @@ namespace ImageBot
             imageCommands.TryAdd(commandToAdd.GetName(), commandToAdd);
         }
 
-        public async Task LoginWithTokenAsync(string token)
+        private async Task LoginWithTokenAsync(string token)
         {
             await client.LoginAsync(TokenType.Bot, token);
         }

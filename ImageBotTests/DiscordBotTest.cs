@@ -9,16 +9,15 @@ namespace ImageBotTests
         public async Task LoginWithTokenAsync_ThrowsArgumentException_WhenLoggingInWithAnInvalidShortToken()
         {
             FakeDiscordLogger fakeLogger = new();
-            DiscordBot bot = new(fakeLogger);
 
-            await LoginWithAnInvalidShortToken(bot);
+            await LoginWithAnInvalidShortToken(fakeLogger);
 
             AssertThatExceptionIsThrownByBotOfType<ArgumentException>(fakeLogger);
         }
 
-        private async Task LoginWithAnInvalidShortToken(DiscordBot bot)
+        private async Task LoginWithAnInvalidShortToken(DiscordLogger logger)
         {
-            await bot.LoginWithTokenAsync("INVALID-TOKEN");
+            var bot = await DiscordBot.CreateBotWithTokenAndLogger("INVALID-TOKEN", logger);
             await bot.StartAsync();
         }
 
@@ -26,43 +25,31 @@ namespace ImageBotTests
         public async Task LoginWithTokenAsync_ThrowsHttpException_WhenLoggingInWithAnInvalidToken()
         {
             FakeDiscordLogger fakeLogger = new();
-            DiscordBot bot = new(fakeLogger);
 
-            await LoginWithAnInvalidToken(bot);
+            await LoginWithAnInvalidToken(fakeLogger);
 
             AssertThatExceptionIsThrownByBotOfType<HttpException>(fakeLogger);
         }
 
-        private async Task LoginWithAnInvalidToken(DiscordBot bot)
+        private async Task LoginWithAnInvalidToken(DiscordLogger logger)
         {
-            await bot.LoginWithTokenAsync("INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN");
+            var bot = await DiscordBot.CreateBotWithTokenAndLogger("INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN-INVALID-TOKEN", logger);
             await bot.StartAsync();
-        }
-
-        // TODO: This test is a reminder that the temporal coupiling should be refactored to make this impossible
-        [Test, Timeout(5000)]
-        public async Task StartAsync_ThrowsInvalidOperationException_WhenNotLoggedIn()
-        {
-            FakeDiscordLogger fakeLogger = new();
-            DiscordBot bot = new(fakeLogger);
-
-            await bot.StartAsync();
-
-            AssertThatExceptionIsThrownByBotOfType<InvalidOperationException>(fakeLogger);
         }
 
         [Test]
-        public void AddImageCommand_ThrowsArgumentNullException_WhenNullImageCommandIsPassed()
+        public async Task AddImageCommand_ThrowsArgumentNullException_WhenNullImageCommandIsPassed()
         {
-            DiscordBot bot = new();
+            var bot = await DiscordBot.CreateBotWithToken("");
 
             Assert.That(() => bot.AddImageCommand(null), Throws.TypeOf<ArgumentNullException>());
         }
 
         [Test]
-        public void AddImageCommand_DoesntThrow_WhenTheSameCommandIsAddedMoreThanOnce()
+        public async Task AddImageCommand_DoesntThrow_WhenTheSameCommandIsAddedMoreThanOnce()
         {
-            DiscordBot bot = new();
+            var bot = await DiscordBot.CreateBotWithToken("");
+
             var mockedCommand = SetupMockedCommand();
 
             Assert.That(() => AddCommandToBotTwice(bot, mockedCommand.Object), Throws.Nothing);
