@@ -6,7 +6,7 @@ using Discord.Net;
 
 namespace ImageBot
 {
-    public class DiscordBot
+    public sealed class DiscordBot
     {
         static public async Task<DiscordBot> CreateBotWithToken(string token) => await CreateBotWithTokenAndLogger(token, new ConsoleDiscordLogger());
         static public async Task<DiscordBot> CreateBotWithTokenAndLogger(string token, DiscordLogger logger)

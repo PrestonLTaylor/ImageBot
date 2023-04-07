@@ -8,7 +8,7 @@ namespace ImageBot.API
         public string status { get; set; }
     }
 
-    public class DogImageAPI : ImageAPI
+    public sealed class DogImageAPI : ImageAPI
     {
         public DogImageAPI() : this(new HttpClientHandler()) { }
 

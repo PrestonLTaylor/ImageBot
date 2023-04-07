@@ -2,7 +2,7 @@
 
 namespace ImageBot
 {
-    internal class Program
+    internal sealed class Program
     {
         public static Task Main(string[] _) => new Program().MainAsync();
 

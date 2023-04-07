@@ -2,7 +2,7 @@
 
 namespace ImageBot.Loggers
 {
-    public class ConsoleDiscordLogger : DiscordLogger
+    public sealed class ConsoleDiscordLogger : DiscordLogger
     {
         public Task Log(LogMessage message) 
         {

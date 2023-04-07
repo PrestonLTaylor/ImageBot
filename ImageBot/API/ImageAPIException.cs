@@ -1,6 +1,6 @@
 ﻿namespace ImageBot.API
 {
-    public class ImageAPIException : Exception
+    public sealed class ImageAPIException : Exception
     {
         public ImageAPIException()
         {

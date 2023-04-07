@@ -3,7 +3,7 @@ using ImageBot.API;
 
 namespace ImageBot.Commands
 {
-    public class DogImageCommand : ImageCommand
+    public sealed class DogImageCommand : ImageCommand
     {
         public DogImageCommand() : this(new DogImageAPI()) { }
         public DogImageCommand(ImageAPI dogImageAPI) { this.dogImageAPI = dogImageAPI; }
